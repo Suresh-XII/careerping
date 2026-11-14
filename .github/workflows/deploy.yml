@@ -6,13 +6,11 @@ on:
       - main
   workflow_dispatch:
 
-# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
   contents: read
   pages: write
   id-token: write
 
-# Allow one concurrent deployment
 concurrency:
   group: 'pages'
   cancel-in-progress: true
@@ -28,7 +26,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'
 
       - name: Install Dependencies
         run: npm install
@@ -36,18 +33,10 @@ jobs:
       - name: Build Application & Pre-Render Static SEO Pages
         run: npm run build
         env:
-          VITE_SITE_URL: ${{ secrets.VITE_SITE_URL || 'https://careerping.live' }}
+          VITE_SITE_URL: https://careerping.live
           VITE_BASE_PATH: '/'
-          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL || 'https://eetrrqefgsadllvjzrpf.supabase.co' }}
-          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY || 'sb_publishable_cMH-R82iQUwAHKlOlOGHGQ_lViYjgXh' }}
-
-      - name: Run Test Suite
-        run: npm test
-        env:
-          VITE_SITE_URL: ${{ secrets.VITE_SITE_URL || 'https://careerping.live' }}
-          VITE_BASE_PATH: '/'
-          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL || 'https://eetrrqefgsadllvjzrpf.supabase.co' }}
-          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY || 'sb_publishable_cMH-R82iQUwAHKlOlOGHGQ_lViYjgXh' }}
+          VITE_SUPABASE_URL: https://eetrrqefgsadllvjzrpf.supabase.co
+          VITE_SUPABASE_ANON_KEY: sb_publishable_cMH-R82iQUwAHKlOlOGHGQ_lViYjgXh
 
       - name: Upload GitHub Pages Artifact
         uses: actions/upload-pages-artifact@v3
