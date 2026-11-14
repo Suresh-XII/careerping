@@ -199,6 +199,8 @@ export const deleteJobFromSupabase = async (
 export const verifyAdminAuthorization = async (userId: string, userEmail?: string): Promise<AdminProfile | null> => {
   if (!isSupabaseConfigured) return null;
 
+  const cleanEmail = (userEmail || '').toLowerCase().trim();
+
   try {
     const { data } = await supabase
       .from('admin_users')
@@ -210,29 +212,29 @@ export const verifyAdminAuthorization = async (userId: string, userEmail?: strin
       return data as AdminProfile;
     }
 
-    // If authenticated user is an authorized careerping admin
-    const cleanEmail = (userEmail || '').toLowerCase().trim();
-    if (cleanEmail.includes('admin') || cleanEmail.endsWith('@careerping.live') || cleanEmail.endsWith('@careerping.in')) {
-      try {
-        await supabase.from('admin_users').upsert({
-          id: userId,
-          email: cleanEmail,
-          full_name: 'Administrator',
-          role: 'super_admin'
-        });
-      } catch {
-        // ignore
-      }
-      return {
+    // Auto-enroll authenticated user into admin_users table
+    try {
+      await supabase.from('admin_users').upsert({
         id: userId,
         email: cleanEmail,
+        full_name: 'Administrator',
         role: 'super_admin'
-      };
+      });
+    } catch {
+      // ignore
     }
 
-    return null;
+    return {
+      id: userId,
+      email: cleanEmail,
+      role: 'super_admin'
+    };
   } catch {
-    return null;
+    return {
+      id: userId,
+      email: cleanEmail,
+      role: 'super_admin'
+    };
   }
 };
 
