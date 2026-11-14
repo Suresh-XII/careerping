@@ -200,7 +200,7 @@ async function runStaticGeneration() {
           <p><strong>Experience:</strong> ${job.experience}</p>
           <p><strong>Qualification:</strong> ${job.qualification}</p>
           <p><strong>Salary / CTC:</strong> ${job.salary || 'Not disclosed'}</p>
-          <p><strong>Application Deadline:</strong> ${job.application_deadline || 'Open / Rolling'}</p>
+          <p><strong>Application Deadline:</strong> ${job.application_deadline ? job.application_deadline.slice(0, 10) : 'ASAP'}</p>
         </section>
         <article style="line-height: 1.7; color: #334155; margin-bottom: 24px;">
           <h3>Job Overview</h3>

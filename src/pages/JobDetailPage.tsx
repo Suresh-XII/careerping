@@ -174,17 +174,16 @@ export const JobDetailPage: React.FC = () => {
                   <span className="text-slate-400 block font-medium">Deadline</span>
                   <div className="flex items-center gap-1 font-semibold text-slate-800">
                     <Calendar className="w-3.5 h-3.5 text-teal-600" />
-                    <span>{job.application_deadline ? job.application_deadline.slice(0, 10) : 'Open / Rolling'}</span>
+                    <span>{job.application_deadline ? job.application_deadline.slice(0, 10) : 'ASAP'}</span>
                   </div>
                 </div>
               </div>
 
               {/* Action Bar (Top) */}
               <div className="mt-6 pt-6 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4">
-                <div className="text-xs text-slate-400 flex items-center gap-3">
-                  <span>Published: {job.published_at ? new Date(job.published_at).toLocaleDateString('en-IN') : 'Recently'}</span>
-                  <span>•</span>
-                  <span>Verified: {new Date(job.last_verified_at).toLocaleDateString('en-IN')}</span>
+                <div className="text-xs text-slate-600 font-medium flex items-center gap-1.5">
+                  <Calendar className="w-3.5 h-3.5 text-teal-600" />
+                  <span>Application Deadline: <strong className="text-slate-800">{job.application_deadline ? job.application_deadline.slice(0, 10) : 'ASAP'}</strong></span>
                 </div>
 
                 <div className="flex items-center gap-2 w-full sm:w-auto">

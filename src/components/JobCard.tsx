@@ -9,14 +9,10 @@ interface JobCardProps {
 }
 
 export const JobCard: React.FC<JobCardProps> = ({ job, featuredHighlight = false }) => {
-  // Format date
-  const formattedDate = job.published_at
-    ? new Date(job.published_at).toLocaleDateString('en-IN', {
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric'
-      })
-    : 'Recently Added';
+  // Application deadline text (defaults to ASAP)
+  const deadlineText = job.application_deadline
+    ? job.application_deadline.slice(0, 10)
+    : 'ASAP';
 
   // Company Initials for badge if logo is missing
   const getCompanyInitials = (name: string) => {
@@ -118,7 +114,7 @@ export const JobCard: React.FC<JobCardProps> = ({ job, featuredHighlight = false
           <div className="flex items-center gap-1.5 truncate">
             <Calendar className="w-3.5 h-3.5 text-teal-600 flex-shrink-0" />
             <span className="truncate">
-              Deadline: {job.application_deadline ? job.application_deadline.slice(0, 10) : 'Open'}
+              Deadline: {deadlineText}
             </span>
           </div>
         </div>
@@ -150,8 +146,9 @@ export const JobCard: React.FC<JobCardProps> = ({ job, featuredHighlight = false
 
       {/* Card Action Footer */}
       <div className="pt-3 border-t border-slate-100 flex items-center justify-between mt-auto">
-        <span className="text-[11px] text-slate-400">
-          Posted: {formattedDate}
+        <span className="text-[11px] font-medium text-slate-500 flex items-center gap-1">
+          <Calendar className="w-3 h-3 text-teal-600 flex-shrink-0" />
+          <span>Deadline: <strong className="text-slate-700">{deadlineText}</strong></span>
         </span>
 
         <Link
