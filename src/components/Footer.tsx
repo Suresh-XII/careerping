@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Briefcase, ShieldCheck, Globe } from 'lucide-react';
+import { Briefcase, ShieldCheck } from 'lucide-react';
 
 export const Footer: React.FC = () => {
   return (
@@ -33,10 +33,6 @@ export const Footer: React.FC = () => {
             <p className="text-sm text-slate-400 leading-relaxed max-w-sm">
               India's dedicated career alerts platform publishing verified job notifications for freshers, IT professionals, cybersecurity specialists, interns, and government job aspirants.
             </p>
-            <div className="flex items-center gap-2 text-xs text-teal-300 bg-navy-800 px-3 py-1.5 rounded-lg w-fit border border-navy-700">
-              <Globe className="w-4 h-4" />
-              <span>Configured for Custom Root Domain (careerping.live)</span>
-            </div>
           </div>
 
           {/* Quick Categories */}
