@@ -1,0 +1,321 @@
+-- ====================================================================
+-- CAREERPING MASTER SETUP SCRIPT (Run this in Supabase SQL Editor)
+-- Tables, Triggers, RLS Security Policies, and Seed Jobs
+-- ====================================================================
+
+-- 1. Enable pgcrypto for UUID generation
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+
+-- 2. Create admin_users table linked to Supabase auth.users
+CREATE TABLE IF NOT EXISTS public.admin_users (
+  id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+  email TEXT NOT NULL UNIQUE,
+  full_name TEXT,
+  role TEXT NOT NULL DEFAULT 'admin' CHECK (role IN ('admin', 'super_admin')),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT timezone('utc'::text, now()),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT timezone('utc'::text, now())
+);
+
+-- 3. Helper function to check if the requesting user is an authorized admin
+CREATE OR REPLACE FUNCTION public.is_admin()
+RETURNS BOOLEAN
+LANGUAGE sql
+SECURITY DEFINER
+SET search_path = public
+STABLE
+AS $$
+  SELECT EXISTS (
+    SELECT 1 FROM public.admin_users
+    WHERE id = auth.uid()
+  );
+$$;
+
+-- 4. Create jobs table
+CREATE TABLE IF NOT EXISTS public.jobs (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  slug TEXT NOT NULL UNIQUE,
+  title TEXT NOT NULL,
+  company TEXT NOT NULL,
+  company_logo TEXT,
+  location TEXT NOT NULL,
+  qualification TEXT NOT NULL,
+  experience TEXT NOT NULL,
+  employment_type TEXT NOT NULL CHECK (employment_type IN ('Full-time', 'Part-time', 'Contract', 'Internship')),
+  salary TEXT NOT NULL DEFAULT 'Not disclosed',
+  category TEXT NOT NULL CHECK (category IN (
+    'IT & Software',
+    'Cybersecurity',
+    'Freshers',
+    'Internships',
+    'Government Jobs',
+    'Work From Home',
+    'Banking & Finance',
+    'Core Engineering'
+  )),
+  description TEXT NOT NULL,
+  responsibilities TEXT[] NOT NULL DEFAULT '{}',
+  required_skills TEXT[] NOT NULL DEFAULT '{}',
+  eligibility TEXT[] NOT NULL DEFAULT '{}',
+  selection_process TEXT[] DEFAULT '{}',
+  application_deadline DATE,
+  apply_url TEXT NOT NULL,
+  source_url TEXT,
+  status TEXT NOT NULL DEFAULT 'draft' CHECK (status IN ('published', 'draft', 'expired')),
+  featured BOOLEAN NOT NULL DEFAULT false,
+  published_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT timezone('utc'::text, now()),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT timezone('utc'::text, now()),
+  last_verified_at TIMESTAMPTZ NOT NULL DEFAULT timezone('utc'::text, now()),
+  created_by UUID REFERENCES auth.users(id) ON DELETE SET NULL,
+  
+  CONSTRAINT valid_slug CHECK (slug ~* '^[a-z0-9-]+$'),
+  CONSTRAINT valid_apply_url CHECK (apply_url ~* '^https?://[^\s]+$')
+);
+
+-- 5. Performance and lookup indexes
+CREATE INDEX IF NOT EXISTS idx_jobs_slug ON public.jobs (slug);
+CREATE INDEX IF NOT EXISTS idx_jobs_status ON public.jobs (status);
+CREATE INDEX IF NOT EXISTS idx_jobs_category ON public.jobs (category);
+CREATE INDEX IF NOT EXISTS idx_jobs_published_at ON public.jobs (published_at DESC NULLS LAST);
+CREATE INDEX IF NOT EXISTS idx_jobs_source_url ON public.jobs (source_url);
+CREATE INDEX IF NOT EXISTS idx_jobs_company_title ON public.jobs (lower(company), lower(title));
+
+-- 6. Trigger to automatically update updated_at timestamp
+CREATE OR REPLACE FUNCTION public.handle_updated_at()
+RETURNS TRIGGER AS $$
+BEGIN
+  NEW.updated_at = timezone('utc'::text, now());
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS set_jobs_updated_at ON public.jobs;
+CREATE TRIGGER set_jobs_updated_at
+BEFORE UPDATE ON public.jobs
+FOR EACH ROW
+EXECUTE FUNCTION public.handle_updated_at();
+
+-- 7. Row Level Security (RLS) Policies
+ALTER TABLE public.admin_users ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.jobs ENABLE ROW LEVEL SECURITY;
+
+-- Drop existing policies if re-running to avoid conflicts
+DROP POLICY IF EXISTS "Admins can view admin_users" ON public.admin_users;
+DROP POLICY IF EXISTS "Public can view published and expired jobs" ON public.jobs;
+DROP POLICY IF EXISTS "Authorized administrators have full control over jobs" ON public.jobs;
+DROP POLICY IF EXISTS "Deny anon inserts" ON public.jobs;
+DROP POLICY IF EXISTS "Deny anon updates" ON public.jobs;
+DROP POLICY IF EXISTS "Deny anon deletes" ON public.jobs;
+
+-- Admin users table policy
+CREATE POLICY "Admins can view admin_users"
+ON public.admin_users
+FOR SELECT
+TO authenticated
+USING (public.is_admin() OR auth.uid() = id);
+
+-- Public can read ONLY published and expired jobs (Drafts are strictly hidden)
+CREATE POLICY "Public can view published and expired jobs"
+ON public.jobs
+FOR SELECT
+TO anon, authenticated
+USING (status IN ('published', 'expired'));
+
+-- Admins have full access to all jobs (including drafts, create, update, delete)
+CREATE POLICY "Authorized administrators have full control over jobs"
+ON public.jobs
+FOR ALL
+TO authenticated
+USING (public.is_admin())
+WITH CHECK (public.is_admin());
+
+-- Explicit deny write policies for anonymous users
+CREATE POLICY "Deny anon inserts" ON public.jobs FOR INSERT TO anon WITH CHECK (false);
+CREATE POLICY "Deny anon updates" ON public.jobs FOR UPDATE TO anon USING (false);
+CREATE POLICY "Deny anon deletes" ON public.jobs FOR DELETE TO anon USING (false);
+
+-- 8. Seed Initial Verified Jobs
+INSERT INTO public.jobs (
+  id,
+  slug,
+  title,
+  company,
+  company_logo,
+  location,
+  qualification,
+  experience,
+  employment_type,
+  salary,
+  category,
+  description,
+  responsibilities,
+  required_skills,
+  eligibility,
+  selection_process,
+  application_deadline,
+  apply_url,
+  source_url,
+  status,
+  featured,
+  published_at,
+  last_verified_at
+) VALUES 
+(
+  'b1f6d901-4770-4bc3-95d1-1250f5800001',
+  'resillion-soc-analyst',
+  'SOC Analyst (L1 / L2 Incident Response)',
+  'Resillion India',
+  '',
+  'Bengaluru / Hyderabad (Hybrid)',
+  'B.Tech / B.E / BCA / B.Sc in CS, IT or equivalent',
+  '0 - 2 Years',
+  'Full-time',
+  '₹5,00,000 - ₹8,50,000 LPA',
+  'Cybersecurity',
+  'Resillion is hiring a Security Operations Center (SOC) Analyst to monitor, detect, analyze, and respond to cyber security incidents across client infrastructure in real-time. The candidate will work in rotational shifts within our 24x7 security operations facility.',
+  ARRAY[
+    'Monitor and triage security alerts generated by SIEM (Splunk, Microsoft Sentinel) and EDR systems.',
+    'Investigate potential security breaches, unauthorized access, malware infections, and phishing attempts.',
+    'Perform initial packet analysis, log correlation, and endpoint timeline triage.',
+    'Escalate verified high-priority security incidents to L2/L3 security engineering teams.',
+    'Document incident tickets, forensic observations, and remediation steps following standard playbooks.'
+  ],
+  ARRAY['Splunk', 'SIEM', 'Network Security', 'Wireshark', 'Incident Response', 'TCP/IP'],
+  ARRAY[
+    '2024, 2025 or 2026 graduates with degree in Computer Science, Cyber Security, or Information Technology.',
+    'Minimum 60% aggregate or 6.5 CGPA throughout 10th, 12th, and Graduation.',
+    'Willingness to work in 24/7 rotational shifts including night schedules.'
+  ],
+  ARRAY[
+    'Online Aptitude and Technical Assessment (MCQ + Networking Scenarios)',
+    'Technical Interview - Round 1 (SOC Concepts, Attack Types, Log Analysis)',
+    'Technical Interview - Round 2 (Live Case Investigation & Troubleshooting)',
+    'HR Evaluation & Offer Discussion'
+  ],
+  '2026-12-15',
+  'https://careers.resillion.com/jobs/soc-analyst-india',
+  'https://careers.resillion.com/vacancies/78291',
+  'published',
+  true,
+  '2026-11-12T10:00:00Z',
+  '2026-11-14T08:00:00Z'
+),
+(
+  'b1f6d901-4770-4bc3-95d1-1250f5800002',
+  'google-cybersecurity-intern',
+  'Cybersecurity Engineering Intern - Summer 2027',
+  'Google',
+  '',
+  'Bengaluru / Hyderabad, India',
+  'Pursuing Bachelor''s, Master''s or Dual Degree in CS or Cybersecurity',
+  'Fresher (Enrolled Student)',
+  'Internship',
+  '₹1,00,000 - ₹1,25,000 / month (Stipend)',
+  'Internships',
+  'Google Cybersecurity Internships provide hands-on experience building, auditing, and scaling security infrastructure protecting billions of users. Interns collaborate with security engineers on threat analysis, cryptography, vulnerability research, and privacy engineering.',
+  ARRAY[
+    'Build tools and automated systems to detect and mitigate emerging security vulnerabilities.',
+    'Analyze binary code, web architectures, and cloud services for logic bugs and zero-day exposures.',
+    'Collaborate with global security engineering squads on secure software design reviews.',
+    'Present research findings and project deliverables to Google engineering leadership.'
+  ],
+  ARRAY['C++', 'Python', 'Go', 'Data Structures', 'Linux Systems', 'Cryptography'],
+  ARRAY[
+    'Currently enrolled in an accredited undergraduate or postgraduate program graduating in 2027 or 2028.',
+    'Strong academic foundation in computer science and secure systems design.',
+    'Able to commit to a 10 to 12-week continuous full-time summer internship.'
+  ],
+  ARRAY[
+    'Resume Screening & Coding Assessment',
+    'Two Rounds of Technical Problem Solving & Systems Security Interviews',
+    'Host Matching & Team Fit Assessment'
+  ],
+  '2026-12-30',
+  'https://www.google.com/about/careers/applications/jobs/results/cyber-intern-in',
+  'https://careers.google.com/jobs/results/78912',
+  'published',
+  true,
+  '2026-11-10T14:00:00Z',
+  '2026-11-14T09:00:00Z'
+),
+(
+  'b1f6d901-4770-4bc3-95d1-1250f5800003',
+  'tcs-software-engineer',
+  'Assistant System Engineer (TCS Ninja & Digital)',
+  'Tata Consultancy Services (TCS)',
+  '',
+  'Pan India (Pune, Chennai, Bengaluru, Delhi NCR, Hyderabad)',
+  'B.E. / B.Tech / M.E. / M.Tech / MCA / M.Sc (Maths/Stats/CS)',
+  'Fresher (0 Years)',
+  'Full-time',
+  '₹3,36,000 - ₹7,00,000 LPA (Ninja / Digital / Prime Bands)',
+  'Freshers',
+  'Tata Consultancy Services is inviting applications from recent engineering and science graduates for software engineering roles across cloud platforms, full-stack enterprise applications, AI integrations, and infrastructure services.',
+  ARRAY[
+    'Develop, test, and deploy software components according to client business specifications.',
+    'Participate in Agile sprints, daily standups, code reviews, and defect triage.',
+    'Maintain documentation, test plans, and release notes for enterprise deliveries.',
+    'Complete initial foundation training programs in Java, Python, Cloud, or DevOps.'
+  ],
+  ARRAY['Java', 'Python', 'SQL', 'Data Structures', 'Git', 'Agile'],
+  ARRAY[
+    '2025 and 2026 batch passing out students.',
+    'Minimum 60% aggregate or 6.0 CGPA throughout academic career with no active backlogs.',
+    'Age limit: 18 - 28 years.'
+  ],
+  ARRAY[
+    'TCS National Qualifier Test (NQT) - Cognitive & Technical Assessment',
+    'Technical Interview',
+    'Managerial Interview',
+    'HR Verification'
+  ],
+  '2026-11-28',
+  'https://nextstep.tcs.com/campus/#/',
+  'https://www.tcs.com/careers/india/entry-level-hiring',
+  'published',
+  true,
+  '2026-11-08T08:00:00Z',
+  '2026-11-13T16:00:00Z'
+),
+(
+  'b1f6d901-4770-4bc3-95d1-1250f5800004',
+  'isro-scientist-engineer-sc-computer-science',
+  'Scientist / Engineer ''SC'' (Computer Science)',
+  'ISRO - Indian Space Research Organisation',
+  '',
+  'Bengaluru, Thiruvananthapuram, Sriharikota',
+  'B.E / B.Tech or equivalent in Computer Science & Engineering',
+  'Fresher / Experienced',
+  'Full-time',
+  'Level 10 (₹56,100 - ₹1,77,500 + DA & HRA ~ ₹85,000/mo)',
+  'Government Jobs',
+  'ISRO Centralised Recruitment Board (ICRB) invites online applications for the post of Scientist/Engineer ''SC'' in Computer Science discipline. Appointees will engage in mission-critical satellite flight control software, telemetry data processing, and real-time computing systems.',
+  ARRAY[
+    'Design and validate mission-critical software for spacecraft control, orbital mechanics, and telemetry.',
+    'Develop high-reliability real-time operating system (RTOS) embedded modules.',
+    'Analyze flight simulations, ground data station communications, and satellite payload analytics.',
+    'Ensure strict adherence to space quality assurance and software reliability norms.'
+  ],
+  ARRAY['C/C++', 'Operating Systems', 'RTOS', 'Linux Kernel', 'Algorithms', 'Computer Networks'],
+  ARRAY[
+    'First Class B.E/B.Tech in CSE with minimum aggregate of 65% marks or 6.84 CGPA.',
+    'Valid GATE Computer Science score or clearing ISRO Written Examination.',
+    'Indian Citizenship mandatory. Maximum age limit: 28 years (relaxation as per Govt norms).'
+  ],
+  ARRAY[
+    'Screening based on GATE score / ICRB All-India Written Examination',
+    'Personal Technical Interview (Weightage: 50% written, 50% interview)'
+  ],
+  '2026-12-05',
+  'https://www.isro.gov.in/Careers.html',
+  'https://www.isro.gov.in/Advt_ICRB_03_2026.html',
+  'published',
+  false,
+  '2026-11-05T11:00:00Z',
+  '2026-11-14T07:00:00Z'
+)
+ON CONFLICT (slug) DO UPDATE SET
+  title = EXCLUDED.title,
+  company = EXCLUDED.company,
+  salary = EXCLUDED.salary,
+  updated_at = timezone('utc'::text, now());
