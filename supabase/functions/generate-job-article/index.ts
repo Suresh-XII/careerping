@@ -60,7 +60,7 @@ serve(async (req) => {
       .eq("id", user.id)
       .maybeSingle();
 
-    const isAuthorized = adminRecord || user.email?.includes("admin") || user.email?.endsWith("@careerping.in");
+    const isAuthorized = adminRecord || user.email?.includes("admin") || user.email?.endsWith("@careerping.live") || user.email?.endsWith("@careerping.in");
     if (!isAuthorized) {
       return new Response(
         JSON.stringify({ error: "Forbidden: Only authorized administrators can generate AI job content." }),

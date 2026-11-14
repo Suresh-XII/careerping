@@ -57,7 +57,7 @@ export const JobDetailPage: React.FC = () => {
     .slice(0, 3);
 
   // Custom domain canonical URL
-  const jobPublicUrl = `https://careerping.in/${job.slug}`;
+  const jobPublicUrl = `https://careerping.live/${job.slug}`;
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(jobPublicUrl);

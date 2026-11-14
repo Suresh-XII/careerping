@@ -9,8 +9,8 @@ interface SEOHeadProps {
   noIndex?: boolean; // Security: hides private admin/sensitive routes from all crawlers
 }
 
-// Configurable root domain. Defaults to custom domain careerping.in
-const CUSTOM_DOMAIN = 'https://careerping.in';
+// Configurable root domain. Defaults to custom domain careerping.live
+const CUSTOM_DOMAIN = 'https://careerping.live';
 
 export const SEOHead: React.FC<SEOHeadProps> = ({
   title,

@@ -307,7 +307,7 @@ export const AdminDashboard: React.FC = () => {
                 type="email"
                 value={loginEmail}
                 onChange={(e) => setLoginEmail(e.target.value)}
-                placeholder="admin@careerping.in"
+                placeholder="admin@careerping.live"
                 required
                 className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 text-slate-800"
               />
@@ -437,7 +437,7 @@ export const AdminDashboard: React.FC = () => {
             <div className="bg-teal-50 border border-teal-200 rounded-2xl p-4 text-xs text-teal-900 space-y-2">
               <span className="font-bold block text-teal-800">Custom Domain Status</span>
               <p className="text-[11px] text-teal-700">
-                Operating with custom root domain structure: <code>https://careerping.in/:jobSlug</code>
+                Operating with custom root domain structure: <code>https://careerping.live/:jobSlug</code>
               </p>
               <a
                 href="/"
@@ -997,10 +997,10 @@ export const AdminDashboard: React.FC = () => {
             </div>
 
             <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 text-xs font-mono text-slate-700 break-all flex items-center justify-between gap-2">
-              <span>https://careerping.in/{publishedModalJob.slug}</span>
+              <span>https://careerping.live/{publishedModalJob.slug}</span>
               <button
                 onClick={() => {
-                  navigator.clipboard.writeText(`https://careerping.in/${publishedModalJob.slug}`);
+                  navigator.clipboard.writeText(`https://careerping.live/${publishedModalJob.slug}`);
                   setCopiedLink(true);
                   setTimeout(() => setCopiedLink(false), 2000);
                 }}

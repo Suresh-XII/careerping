@@ -212,7 +212,7 @@ export const verifyAdminAuthorization = async (userId: string, userEmail?: strin
 
     // If authenticated user is an authorized careerping admin
     const cleanEmail = (userEmail || '').toLowerCase().trim();
-    if (cleanEmail.includes('admin') || cleanEmail.endsWith('@careerping.in') || cleanEmail.endsWith('@careerping.com')) {
+    if (cleanEmail.includes('admin') || cleanEmail.endsWith('@careerping.live') || cleanEmail.endsWith('@careerping.in')) {
       try {
         await supabase.from('admin_users').upsert({
           id: userId,

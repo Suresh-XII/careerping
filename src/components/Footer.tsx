@@ -35,7 +35,7 @@ export const Footer: React.FC = () => {
             </p>
             <div className="flex items-center gap-2 text-xs text-teal-300 bg-navy-800 px-3 py-1.5 rounded-lg w-fit border border-navy-700">
               <Globe className="w-4 h-4" />
-              <span>Configured for Custom Root Domain (careerping.in / careerping.com)</span>
+              <span>Configured for Custom Root Domain (careerping.live)</span>
             </div>
           </div>
 

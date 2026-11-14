@@ -95,12 +95,12 @@ describe('Careerping Job Core Logic & Rules', () => {
   });
 
   it('generates clean custom domain root URLs without /careerping/ or github usernames', () => {
-    const CUSTOM_DOMAIN = 'https://careerping.in';
+    const CUSTOM_DOMAIN = 'https://careerping.live';
     const generateJobUrl = (slug: string) => `${CUSTOM_DOMAIN}/${slug}`;
 
-    expect(generateJobUrl('resillion-soc-analyst')).toBe('https://careerping.in/resillion-soc-analyst');
-    expect(generateJobUrl('google-cybersecurity-intern')).toBe('https://careerping.in/google-cybersecurity-intern');
-    expect(generateJobUrl('tcs-software-engineer')).toBe('https://careerping.in/tcs-software-engineer');
+    expect(generateJobUrl('resillion-soc-analyst')).toBe('https://careerping.live/resillion-soc-analyst');
+    expect(generateJobUrl('google-cybersecurity-intern')).toBe('https://careerping.live/google-cybersecurity-intern');
+    expect(generateJobUrl('tcs-software-engineer')).toBe('https://careerping.live/tcs-software-engineer');
     expect(generateJobUrl('resillion-soc-analyst')).not.toContain('github.io');
     expect(generateJobUrl('resillion-soc-analyst')).not.toContain('/careerping/');
   });
@@ -144,13 +144,13 @@ describe('Careerping Job Core Logic & Rules', () => {
     };
 
     const publishedJob = INITIAL_JOBS.find(j => j.status === 'published')!;
-    const publishedSchema = createJobSchema(publishedJob, 'https://careerping.in');
+    const publishedSchema = createJobSchema(publishedJob, 'https://careerping.live');
     expect(publishedSchema).not.toBeNull();
     expect(publishedSchema?.['@type']).toBe('JobPosting');
     expect(publishedSchema?.title).toBe(publishedJob.title);
 
     const expiredJob = INITIAL_JOBS.find(j => j.status === 'expired')!;
-    const expiredSchema = createJobSchema(expiredJob, 'https://careerping.in');
+    const expiredSchema = createJobSchema(expiredJob, 'https://careerping.live');
     // Must NOT emit JobPosting for expired vacancies
     expect(expiredSchema).toBeNull();
   });

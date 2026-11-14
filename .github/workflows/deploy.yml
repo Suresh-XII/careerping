@@ -36,7 +36,7 @@ jobs:
       - name: Run Test Suite
         run: npm test
         env:
-          VITE_SITE_URL: ${{ secrets.VITE_SITE_URL || 'https://careerping.in' }}
+          VITE_SITE_URL: ${{ secrets.VITE_SITE_URL || 'https://careerping.live' }}
           VITE_BASE_PATH: '/'
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL || 'https://eetrrqefgsadllvjzrpf.supabase.co' }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY || 'sb_publishable_cMH-R82iQUwAHKlOlOGHGQ_lViYjgXh' }}
@@ -44,7 +44,7 @@ jobs:
       - name: Build Application & Pre-Render Static SEO Pages
         run: npm run build
         env:
-          VITE_SITE_URL: ${{ secrets.VITE_SITE_URL || 'https://careerping.in' }}
+          VITE_SITE_URL: ${{ secrets.VITE_SITE_URL || 'https://careerping.live' }}
           VITE_BASE_PATH: '/'
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL || 'https://eetrrqefgsadllvjzrpf.supabase.co' }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY || 'sb_publishable_cMH-R82iQUwAHKlOlOGHGQ_lViYjgXh' }}

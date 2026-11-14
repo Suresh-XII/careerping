@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://careerping.in/sitemap.xml
+Sitemap: https://careerping.live/sitemap.xml

@@ -77,7 +77,7 @@ The HTML generation template embeds strict browser security directives:
 ## 4. Identity & Privacy Protection
 
 Careerping enforces a zero-identity-leak standard:
-1. **Public Contact Form:** Generic, professional contact placeholders (e.g., `contact@careerping.in` or general domain references) replace any individual maintainer personal names, personal phone numbers, or private email accounts.
+1. **Public Contact Form:** Generic, professional contact placeholders (e.g., `contact@careerping.live` or general domain references) replace any individual maintainer personal names, personal phone numbers, or private email accounts.
 2. **Git Commit History:** Repository commits are anonymized and free of personal identifiers.
 3. **Audit Trail:** Admin user logins record only internal UUID references in `public.admin_users` without exposing identity attributes to public endpoints.
 
@@ -97,7 +97,7 @@ The codebase includes automated test suites in `src/__tests__/securityAudit.test
 
 If you discover a security vulnerability or vulnerability pattern in Careerping, please report it privately:
 
-- **Email:** `security@careerping.in`
+- **Email:** `security@careerping.live`
 - Please do not submit public GitHub issues for security vulnerabilities.
 - Provide step-by-step reproduction instructions and proof-of-concept where possible.
 - Responsible disclosures will receive a prompt acknowledgment and prioritized remediation.

@@ -17,7 +17,7 @@ const __dirname = path.dirname(__filename);
 const projectRoot = path.resolve(__dirname, '..');
 const distDir = path.resolve(projectRoot, 'dist');
 
-const CUSTOM_DOMAIN = 'https://careerping.in';
+const CUSTOM_DOMAIN = 'https://careerping.live';
 
 async function fetchJobsForBuild() {
   const supabaseUrl = process.env.VITE_SUPABASE_URL || 'https://eetrrqefgsadllvjzrpf.supabase.co';
@@ -141,9 +141,9 @@ async function runStaticGeneration() {
   const expiredJobs = allJobs.filter(j => j.status === 'expired');
 
   // 1. Generate CNAME file for GitHub Pages custom domain
-  const cnameContent = 'careerping.in';
+  const cnameContent = 'careerping.live';
   fs.writeFileSync(path.join(distDir, 'CNAME'), cnameContent, 'utf-8');
-  console.log('[SEO Generator] Created dist/CNAME with "careerping.in"');
+  console.log('[SEO Generator] Created dist/CNAME with "careerping.live"');
 
   // 2. Pre-render individual published and expired job pages
   const jobsToPreRender = [...publishedJobs, ...expiredJobs];

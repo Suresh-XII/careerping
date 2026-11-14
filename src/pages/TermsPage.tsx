@@ -23,7 +23,7 @@ export const TermsPage: React.FC = () => {
         <section className="space-y-2">
           <h2 className="text-base font-bold text-navy-800">1. Acceptance of Terms</h2>
           <p>
-            By visiting or browsing Careerping (accessible at careerping.in or through associated subdomains), you agree to abide by these terms and conditions.
+            By visiting or browsing Careerping (accessible at careerping.live or through associated subdomains), you agree to abide by these terms and conditions.
           </p>
         </section>
 

@@ -9,7 +9,7 @@ describe('Stage 5: SEO, Sitemap, Static Pre-Rendering & Custom Domain', () => {
     const cnamePath = path.join(distDir, 'CNAME');
     expect(fs.existsSync(cnamePath)).toBe(true);
     const content = fs.readFileSync(cnamePath, 'utf-8').trim();
-    expect(content).toBe('careerping.in');
+    expect(content).toBe('careerping.live');
     expect(content).not.toContain('github.io');
     expect(content).not.toContain('/');
   });
@@ -19,10 +19,10 @@ describe('Stage 5: SEO, Sitemap, Static Pre-Rendering & Custom Domain', () => {
     expect(fs.existsSync(sitemapPath)).toBe(true);
     const xml = fs.readFileSync(sitemapPath, 'utf-8');
 
-    expect(xml).toContain('<loc>https://careerping.in/</loc>');
-    expect(xml).toContain('<loc>https://careerping.in/latest-jobs</loc>');
-    expect(xml).toContain('<loc>https://careerping.in/category/cybersecurity</loc>');
-    expect(xml).toContain('<loc>https://careerping.in/resillion-soc-analyst</loc>');
+    expect(xml).toContain('<loc>https://careerping.live/</loc>');
+    expect(xml).toContain('<loc>https://careerping.live/latest-jobs</loc>');
+    expect(xml).toContain('<loc>https://careerping.live/category/cybersecurity</loc>');
+    expect(xml).toContain('<loc>https://careerping.live/resillion-soc-analyst</loc>');
 
     // Must never contain GitHub Pages subfolder in sitemap
     expect(xml).not.toContain('/careerping/');
@@ -36,7 +36,7 @@ describe('Stage 5: SEO, Sitemap, Static Pre-Rendering & Custom Domain', () => {
 
     // Security best practice: Never advertise admin endpoints in robots.txt
     expect(txt).not.toContain('/admin');
-    expect(txt).toContain('Sitemap: https://careerping.in/sitemap.xml');
+    expect(txt).toContain('Sitemap: https://careerping.live/sitemap.xml');
   });
 
   it('pre-renders static crawlable HTML for clean job URLs', () => {
@@ -46,10 +46,10 @@ describe('Stage 5: SEO, Sitemap, Static Pre-Rendering & Custom Domain', () => {
 
     // Title & Canonical
     expect(html).toContain('<title>SOC Analyst (L1 / L2 Incident Response) at Resillion India - Verified Job Alert | Careerping</title>');
-    expect(html).toContain('<link rel="canonical" href="https://careerping.in/resillion-soc-analyst" />');
+    expect(html).toContain('<link rel="canonical" href="https://careerping.live/resillion-soc-analyst" />');
 
     // Open Graph
-    expect(html).toContain('property="og:url" content="https://careerping.in/resillion-soc-analyst"');
+    expect(html).toContain('property="og:url" content="https://careerping.live/resillion-soc-analyst"');
 
     // JobPosting Schema
     expect(html).toContain('"@type":"JobPosting"');

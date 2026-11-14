@@ -17,7 +17,7 @@
 ### Key Architectural Highlights
 
 - **Pure Client Redirection:** Careerping collects **zero candidate resumes or personally identifiable data (PII)**. Candidates apply directly on official employer career portals via clean `target="_blank" rel="noopener noreferrer nofollow"` links.
-- **Root Domain Architecture:** Hosted on GitHub Pages with native custom domain mapping (`https://careerping.in/` or `https://careerping.com/`) and clean slug routing (`/:jobSlug`) with zero subdirectory prefixes.
+- **Root Domain Architecture:** Hosted on GitHub Pages with native custom domain mapping (`https://careerping.live/`) and clean slug routing (`/:jobSlug`) with zero subdirectory prefixes.
 - **Zero Cloudflare Dependency:** Pure native static deployment with instant DNS routing.
 - **Automated Static SEO Pre-rendering:** Post-build pre-renderer creates standalone `index.html` files for every published job with Schema.org `JobPosting` JSON-LD structured data and OpenGraph tags for rich Google Search indexing.
 - **AI-Powered Job Summarization:** Google Gemini 2.5 Flash integrated via secure Supabase Edge Functions with anti-hallucination guardrails to generate structured, recruiter-ready job descriptions.
@@ -166,7 +166,7 @@ git push -u origin main
 
 Navigate to **Settings > Secrets and variables > Actions** in your GitHub repository and add:
 
-- `VITE_SITE_URL`: `https://careerping.in` (or your domain)
+- `VITE_SITE_URL`: `https://careerping.live`
 - `VITE_SUPABASE_URL`: `https://your-project.supabase.co`
 - `VITE_SUPABASE_ANON_KEY`: `your-supabase-anon-key`
 
@@ -174,7 +174,7 @@ Navigate to **Settings > Secrets and variables > Actions** in your GitHub reposi
 
 1. In your GitHub repository, open **Settings > Pages**.
 2. Under **Build and deployment > Source**, select **GitHub Actions**.
-3. Under **Custom domain**, enter `careerping.in` (or `careerping.com`) and save.
+3. Under **Custom domain**, enter `careerping.live` and save.
 4. Check **Enforce HTTPS** (available once DNS propagation completes).
 
 ### Step 4: Configure DNS Records at Domain Registrar
