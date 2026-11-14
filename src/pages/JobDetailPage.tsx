@@ -18,7 +18,6 @@ import {
 import { useJobs } from '../context/JobContext';
 import { JobCard } from '../components/JobCard';
 import { SEOHead } from '../components/SEOHead';
-import { AdBanner } from '../components/AdBanner';
 
 export const JobDetailPage: React.FC = () => {
   const { jobSlug } = useParams<{ jobSlug: string }>();
@@ -417,9 +416,6 @@ export const JobDetailPage: React.FC = () => {
                 </div>
               </div>
             </div>
-
-            {/* Non-Intrusive Sponsored / Ad Sidebar Space */}
-            <AdBanner variant="sidebar" />
           </aside>
         </div>
 

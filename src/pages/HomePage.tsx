@@ -16,7 +16,6 @@ import { useJobs } from '../context/JobContext';
 import { JobCard } from '../components/JobCard';
 import { HeroSearch } from '../components/HeroSearch';
 import { SEOHead } from '../components/SEOHead';
-import { AdBanner } from '../components/AdBanner';
 
 export const HomePage: React.FC = () => {
   const { jobs } = useJobs();
@@ -164,11 +163,6 @@ export const HomePage: React.FC = () => {
           </div>
         </section>
       )}
-
-      {/* Non-Intrusive Sponsored / Ad Space */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
-        <AdBanner variant="horizontal" />
-      </div>
 
       {/* Section 7: Freshers Opportunities */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
