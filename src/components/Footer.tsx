@@ -141,7 +141,7 @@ export const Footer: React.FC = () => {
         <div className="border-t border-navy-800 mt-12 pt-6 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-4">
           <p>© {new Date().getFullYear()} Careerping. All rights reserved. Made for Indian job aspirants.</p>
           <p className="flex items-center gap-1 text-slate-400">
-            Powered by GitHub Pages & Supabase
+            Powered by Careerping
           </p>
         </div>
       </div>

@@ -4,6 +4,7 @@ import { Search, Filter, MapPin, Briefcase, X, SlidersHorizontal } from 'lucide-
 import { useJobs } from '../context/JobContext';
 import { JobCard } from '../components/JobCard';
 import { SEOHead } from '../components/SEOHead';
+import { AdBanner } from '../components/AdBanner';
 import { JobCategory } from '../types/job';
 
 interface JobListingsPageProps {
@@ -225,6 +226,9 @@ export const JobListingsPage: React.FC<JobListingsPageProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Non-Intrusive Sponsored / Ad Banner */}
+      <AdBanner variant="horizontal" />
 
       {/* Job Cards Grid */}
       {filteredJobs.length > 0 ? (

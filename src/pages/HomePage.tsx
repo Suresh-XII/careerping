@@ -16,6 +16,7 @@ import { useJobs } from '../context/JobContext';
 import { JobCard } from '../components/JobCard';
 import { HeroSearch } from '../components/HeroSearch';
 import { SEOHead } from '../components/SEOHead';
+import { AdBanner } from '../components/AdBanner';
 
 export const HomePage: React.FC = () => {
   const { jobs } = useJobs();
@@ -44,13 +45,27 @@ export const HomePage: React.FC = () => {
   // Government Jobs
   const govtJobs = publishedJobs.filter(j => j.category === 'Government Jobs').slice(0, 4);
 
+  // Dynamic job counts for categories based on uploaded & posted jobs
+  const itSoftwareCount = publishedJobs.filter(j => j.category === 'IT & Software').length;
+  const cyberCount = publishedJobs.filter(j => j.category === 'Cybersecurity').length;
+  const freshersCount = publishedJobs.filter(j => j.category === 'Freshers' || j.experience.toLowerCase().includes('fresher') || j.experience.includes('0 -') || j.experience.includes('0 Y')).length;
+  const internshipCount = publishedJobs.filter(j => j.category === 'Internships' || j.employment_type === 'Internship').length;
+  const wfhCount = publishedJobs.filter(j => j.category === 'Work From Home' || j.location.toLowerCase().includes('remote')).length;
+  const govtCount = publishedJobs.filter(j => j.category === 'Government Jobs').length;
+
+  const formatCategoryCount = (count: number) => {
+    if (count === 0) return 'Explore Jobs';
+    if (count === 1) return '1 Active Job';
+    return `${count} Active Jobs`;
+  };
+
   const categories = [
-    { name: 'IT & Software', icon: Terminal, count: '120+ Active', path: '/category/it-software', color: 'from-blue-500 to-indigo-600' },
-    { name: 'Cybersecurity', icon: ShieldAlert, count: '45+ Active', path: '/category/cybersecurity', color: 'from-teal-500 to-emerald-600' },
-    { name: 'Freshers (0 Exp)', icon: GraduationCap, count: '80+ Active', path: '/category/freshers', color: 'from-purple-500 to-violet-600' },
-    { name: 'Paid Internships', icon: Sparkles, count: '60+ Active', path: '/category/internships', color: 'from-amber-500 to-orange-600' },
-    { name: 'Remote / WFH', icon: Home, count: '35+ Active', path: '/category/work-from-home', color: 'from-cyan-500 to-blue-600' },
-    { name: 'Govt & PSU', icon: Landmark, count: '50+ Active', path: '/category/government-jobs', color: 'from-rose-500 to-red-600' },
+    { name: 'IT & Software', icon: Terminal, count: formatCategoryCount(itSoftwareCount), path: '/category/it-software', color: 'from-blue-500 to-indigo-600' },
+    { name: 'Cybersecurity', icon: ShieldAlert, count: formatCategoryCount(cyberCount), path: '/category/cybersecurity', color: 'from-teal-500 to-emerald-600' },
+    { name: 'Freshers (0 Exp)', icon: GraduationCap, count: formatCategoryCount(freshersCount), path: '/category/freshers', color: 'from-purple-500 to-violet-600' },
+    { name: 'Paid Internships', icon: Sparkles, count: formatCategoryCount(internshipCount), path: '/category/internships', color: 'from-amber-500 to-orange-600' },
+    { name: 'Remote / WFH', icon: Home, count: formatCategoryCount(wfhCount), path: '/category/work-from-home', color: 'from-cyan-500 to-blue-600' },
+    { name: 'Govt & PSU', icon: Landmark, count: formatCategoryCount(govtCount), path: '/category/government-jobs', color: 'from-rose-500 to-red-600' },
   ];
 
   return (
@@ -149,6 +164,11 @@ export const HomePage: React.FC = () => {
           </div>
         </section>
       )}
+
+      {/* Non-Intrusive Sponsored / Ad Space */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
+        <AdBanner variant="horizontal" />
+      </div>
 
       {/* Section 7: Freshers Opportunities */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
