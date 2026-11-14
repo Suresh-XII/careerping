@@ -255,7 +255,8 @@ async function runStaticGeneration() {
     { route: 'privacy-policy', title: 'Privacy Policy | Careerping', desc: 'Careerping candidate privacy and data protection policies.' },
     { route: 'terms', title: 'Terms & Conditions | Careerping', desc: 'Terms and conditions governing the Careerping platform.' },
     { route: 'guidance', title: 'Career Guidance & Roadmap | Careerping', desc: 'L1 SOC analyst roadmaps, ATS resume tips and exam preparation.' },
-    { route: 'latest-jobs', title: 'Latest Verified Job Vacancies | Careerping', desc: 'Browse all active IT, cybersecurity, fresher, and govt jobs in India.' }
+    { route: 'latest-jobs', title: 'Latest Verified Job Vacancies | Careerping', desc: 'Browse all active IT, cybersecurity, fresher, and govt jobs in India.' },
+    { route: 'admin', title: 'Admin Login | Careerping', desc: 'Careerping Administrator Portal', noIndex: true }
   ];
 
   for (const page of staticPages) {
@@ -265,7 +266,11 @@ async function runStaticGeneration() {
       .replace(/<title>.*?<\/title>/, `<title>${page.title}</title>`)
       .replace(/<meta name="description" content=".*?" \/>/, `<meta name="description" content="${page.desc}" />`);
     
-    pageHtml = pageHtml.replace('</head>', `<link rel="canonical" href="${CUSTOM_DOMAIN}/${page.route}" /></head>`);
+    if (page.noIndex) {
+      pageHtml = pageHtml.replace('</head>', `<meta name="robots" content="noindex, nofollow, noarchive, nosnippet" /></head>`);
+    } else {
+      pageHtml = pageHtml.replace('</head>', `<link rel="canonical" href="${CUSTOM_DOMAIN}/${page.route}" /></head>`);
+    }
     fs.writeFileSync(path.join(pageDir, 'index.html'), pageHtml, 'utf-8');
   }
 
