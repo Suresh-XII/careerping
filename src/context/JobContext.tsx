@@ -27,7 +27,8 @@ interface JobContextType {
   updateJob: (id: string, updates: Partial<Job>) => Promise<{ success: boolean; error?: string }>;
   deleteJob: (id: string) => Promise<{ success: boolean; error?: string }>;
   togglePublishStatus: (id: string) => Promise<void>;
-  markExpired: (id: string) => Promise<void>;
+  markExpired: (id: string, autoDelete?: boolean) => Promise<void>;
+  purgeExpiredJobs: () => Promise<number>;
   checkDuplicate: (sourceUrl?: string, company?: string, title?: string) => Job | undefined;
 }
 
@@ -292,8 +293,20 @@ export const JobProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     });
   };
 
-  const markExpired = async (id: string) => {
-    await updateJob(id, { status: 'expired' });
+  const markExpired = async (id: string, autoDelete: boolean = true) => {
+    if (autoDelete) {
+      await deleteJob(id);
+    } else {
+      await updateJob(id, { status: 'expired' });
+    }
+  };
+
+  const purgeExpiredJobs = async (): Promise<number> => {
+    const expired = jobs.filter(j => j.status === 'expired');
+    for (const j of expired) {
+      await deleteJob(j.id);
+    }
+    return expired.length;
   };
 
   return (
@@ -311,6 +324,7 @@ export const JobProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         deleteJob,
         togglePublishStatus,
         markExpired,
+        purgeExpiredJobs,
         checkDuplicate,
       }}
     >

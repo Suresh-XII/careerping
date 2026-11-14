@@ -34,6 +34,7 @@ export const AdminDashboard: React.FC = () => {
     deleteJob, 
     togglePublishStatus, 
     markExpired,
+    purgeExpiredJobs,
     checkDuplicate 
   } = useJobs();
 
@@ -93,6 +94,36 @@ export const AdminDashboard: React.FC = () => {
   const draftCount = jobs.filter(j => j.status === 'draft').length;
   const expiredCount = jobs.filter(j => j.status === 'expired').length;
   const recentlyUpdated = jobs.slice(0, 5);
+
+  // Handle single job mark expired & auto-delete confirmation
+  const handleMarkExpiredWithConfirm = async (job: Job) => {
+    const confirmed = window.confirm(
+      `Confirm Expiry & Auto-Delete:\n\n` +
+      `Are you sure you want to mark "${job.title}" (${job.company}) as expired?\n\n` +
+      `Once confirmed, this listing will be automatically deleted from the database and local memory to free up space for new jobs and images.`
+    );
+    if (confirmed) {
+      await markExpired(job.id, true);
+    }
+  };
+
+  // Handle batch purge of all expired jobs
+  const handlePurgeAllExpired = async () => {
+    const expiredList = jobs.filter(j => j.status === 'expired');
+    if (expiredList.length === 0) {
+      alert('No expired jobs currently in the system.');
+      return;
+    }
+    const confirmed = window.confirm(
+      `Memory & Storage Cleanup:\n\n` +
+      `Found ${expiredList.length} expired vacancy listing(s).\n\n` +
+      `Do you want to permanently delete them to free up memory and storage space for new job postings?`
+    );
+    if (confirmed) {
+      const count = await purgeExpiredJobs();
+      alert(`Cleaned up ${count} expired job(s). Memory and storage freed successfully.`);
+    }
+  };
 
   // Handle Login
   const handleLogin = async (e: React.FormEvent) => {
@@ -472,8 +503,19 @@ export const AdminDashboard: React.FC = () => {
                     <span className="text-2xl font-extrabold text-amber-700 mt-1 block">{draftCount}</span>
                   </div>
 
-                  <div className="bg-white p-5 rounded-2xl border border-surface-border shadow-sm">
-                    <span className="text-xs text-rose-600 font-semibold block">Expired</span>
+                  <div className="bg-white p-5 rounded-2xl border border-surface-border shadow-sm flex flex-col justify-between">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-rose-600 font-semibold block">Expired</span>
+                      {expiredCount > 0 && (
+                        <button
+                          onClick={handlePurgeAllExpired}
+                          className="text-[10px] font-bold text-rose-600 hover:text-rose-800 underline flex items-center gap-1"
+                          title="Purge all expired listings to free up storage"
+                        >
+                          <Trash2 className="w-3 h-3" /> Auto-Purge
+                        </button>
+                      )}
+                    </div>
                     <span className="text-2xl font-extrabold text-rose-700 mt-1 block">{expiredCount}</span>
                   </div>
                 </div>
@@ -685,6 +727,34 @@ export const AdminDashboard: React.FC = () => {
                         onChange={(e) => setFormData({ ...formData, application_deadline: e.target.value })}
                         className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
                       />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 mb-1">
+                        Company Logo Image URL (Optional)
+                      </label>
+                      <div className="flex items-center gap-2">
+                        {formData.company_logo && (
+                          <img
+                            src={formData.company_logo}
+                            alt="Logo"
+                            className="w-9 h-9 object-contain rounded-lg border border-slate-200 bg-white p-1 flex-shrink-0"
+                            onError={(e) => {
+                              (e.target as HTMLElement).style.display = 'none';
+                            }}
+                          />
+                        )}
+                        <input
+                          type="url"
+                          value={formData.company_logo}
+                          onChange={(e) => setFormData({ ...formData, company_logo: e.target.value })}
+                          placeholder="https://company.com/logo.png"
+                          className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+                        />
+                      </div>
+                      <p className="text-[10px] text-slate-400 mt-0.5">
+                        Leave blank to automatically use lightweight SVG initials (saves memory & bandwidth).
+                      </p>
                     </div>
                   </div>
 
@@ -926,16 +996,14 @@ export const AdminDashboard: React.FC = () => {
                               <FolderCheck className="w-3.5 h-3.5 text-teal-600" />
                             </button>
 
-                            {/* Mark Expired */}
-                            {job.status !== 'expired' && (
-                              <button
-                                onClick={() => markExpired(job.id)}
-                                className="p-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-100"
-                                title="Mark as Expired"
-                              >
-                                <AlertCircle className="w-3.5 h-3.5 text-amber-600" />
-                              </button>
-                            )}
+                            {/* Mark Expired with Auto-Delete Confirmation */}
+                            <button
+                              onClick={() => handleMarkExpiredWithConfirm(job)}
+                              className="p-1.5 rounded-lg border border-amber-200 text-amber-700 hover:bg-amber-50"
+                              title="Mark as Expired & Auto-Delete (frees storage for next jobs)"
+                            >
+                              <AlertCircle className="w-3.5 h-3.5 text-amber-600" />
+                            </button>
 
                             {/* Edit */}
                             <button
