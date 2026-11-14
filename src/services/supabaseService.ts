@@ -8,6 +8,22 @@ export interface AdminProfile {
 }
 
 /**
+ * Normalizes and sanitizes known outdated/legacy URLs in job data
+ */
+export const sanitizeJobData = (job: Job): Job => {
+  if (
+    job.apply_url === 'https://www.google.com/about/careers/applications/jobs/results/cyber-intern-in' ||
+    (job.slug === 'google-cybersecurity-intern' && (!job.apply_url || job.apply_url.includes('cyber-intern-in')))
+  ) {
+    return {
+      ...job,
+      apply_url: 'https://www.google.com/about/careers/applications/jobs/results/91436104816698054-software-engineering-intern-phd-summer-2027?q=intern&hl=en'
+    };
+  }
+  return job;
+};
+
+/**
  * Public Data Fetching
  * Protected by Supabase RLS: only published and expired listings are accessible to the public.
  */
@@ -27,7 +43,8 @@ export const fetchPublicJobsFromSupabase = async (): Promise<{ data: Job[] | nul
       return { data: null, error: error.message };
     }
 
-    return { data: (data as Job[]) || [], error: null };
+    const sanitizedData = ((data as Job[]) || []).map(sanitizeJobData);
+    return { data: sanitizedData, error: null };
   } catch (err: any) {
     return { data: null, error: err.message || 'Network error fetching jobs' };
   }
@@ -52,7 +69,7 @@ export const fetchJobBySlugFromSupabase = async (slug: string): Promise<{ data: 
       return { data: null, error: error.message };
     }
 
-    return { data: data as Job, error: null };
+    return { data: data ? sanitizeJobData(data as Job) : null, error: null };
   } catch (err: any) {
     return { data: null, error: err.message || 'Error loading job details' };
   }
@@ -77,7 +94,8 @@ export const fetchAdminJobsFromSupabase = async (): Promise<{ data: Job[] | null
       return { data: null, error: error.message };
     }
 
-    return { data: (data as Job[]) || [], error: null };
+    const sanitizedData = ((data as Job[]) || []).map(sanitizeJobData);
+    return { data: sanitizedData, error: null };
   } catch (err: any) {
     return { data: null, error: err.message || 'Error fetching admin jobs' };
   }

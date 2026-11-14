@@ -231,7 +231,7 @@ INSERT INTO public.jobs (
     'Host Matching & Team Fit Assessment'
   ],
   '2026-12-30',
-  'https://www.google.com/about/careers/applications/jobs/results/cyber-intern-in',
+  'https://www.google.com/about/careers/applications/jobs/results/91436104816698054-software-engineering-intern-phd-summer-2027?q=intern&hl=en',
   'https://careers.google.com/jobs/results/78912',
   'published',
   true,

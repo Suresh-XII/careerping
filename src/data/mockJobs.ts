@@ -84,7 +84,7 @@ export const INITIAL_JOBS: Job[] = [
       'Host Matching & Team Fit Assessment'
     ],
     application_deadline: '2026-12-30',
-    apply_url: 'https://www.google.com/about/careers/applications/jobs/results/cyber-intern-in',
+    apply_url: 'https://www.google.com/about/careers/applications/jobs/results/91436104816698054-software-engineering-intern-phd-summer-2027?q=intern&hl=en',
     source_url: 'https://careers.google.com/jobs/results/78912',
     status: 'published',
     published_at: '2026-11-10T14:00:00Z',

@@ -35,7 +35,15 @@ async function fetchJobsForBuild() {
       const data = await res.json();
       if (Array.isArray(data) && data.length > 0) {
         console.log(`[SEO Generator] Successfully fetched ${data.length} jobs from Supabase database.`);
-        return data;
+        return data.map(j => {
+          if (j.slug === 'google-cybersecurity-intern' || j.apply_url?.includes('cyber-intern-in')) {
+            return {
+              ...j,
+              apply_url: 'https://www.google.com/about/careers/applications/jobs/results/91436104816698054-software-engineering-intern-phd-summer-2027?q=intern&hl=en'
+            };
+          }
+          return j;
+        });
       }
     }
   } catch (err) {
@@ -79,7 +87,7 @@ async function fetchJobsForBuild() {
       required_skills: ['C++', 'Python', 'Go', 'Data Structures', 'Linux Systems'],
       eligibility: ['Currently enrolled student graduating in 2027 or 2028'],
       application_deadline: '2026-12-30',
-      apply_url: 'https://www.google.com/about/careers/applications/jobs/results/cyber-intern-in',
+      apply_url: 'https://www.google.com/about/careers/applications/jobs/results/91436104816698054-software-engineering-intern-phd-summer-2027?q=intern&hl=en',
       status: 'published',
       published_at: '2026-11-10T14:00:00Z',
       last_verified_at: '2026-11-14T09:00:00Z'

@@ -11,6 +11,7 @@ import {
   loginAdminWithSupabase,
   logoutAdminFromSupabase,
   verifyAdminAuthorization,
+  sanitizeJobData,
   AdminProfile
 } from '../services/supabaseService';
 
@@ -42,13 +43,13 @@ export const JobProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          return parsed;
+          return parsed.map(sanitizeJobData);
         }
       }
     } catch {
       // Fallback
     }
-    return INITIAL_JOBS;
+    return INITIAL_JOBS.map(sanitizeJobData);
   });
 
   const [currentUser, setCurrentUser] = useState<AdminProfile | null>(() => {
